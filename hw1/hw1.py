@@ -136,5 +136,6 @@ plt.show()
 print(np.round(V[0], 3))
 print(np.round(V[1], 3))
 
+
 def sparse_PCA(X,c1,c2,max_iter):
     """ Returns """
