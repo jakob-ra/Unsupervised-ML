@@ -6,9 +6,10 @@
 rm(list = ls())
 library(smacof)
 
-# Load the data
+#################################### Load the data ####################################################
 load('/Users/gabrielaszini/Documents/Unsupervised ML/Assignment 2/basket.RData')
 
+############################ Transform data into dissimilarities ######################################
 # Here the values indicate co-purchase, so we will do the same transformation as in the paper
 # No entries are 0, so do not need to worry about that
 # create empty matrix of dissimilarities
@@ -27,6 +28,7 @@ load('/Users/gabrielaszini/Documents/Unsupervised ML/Assignment 2/basket.RData')
  dissimilarities_package2 = sim2diss(basket, method = "transition")
  # Different from what we have
  
+ ################################# Function for euclidean distance ####################################
  euclideandist=function(X){
    store = X%*%t(X)
    alpha = diag(store)
@@ -34,9 +36,8 @@ load('/Users/gabrielaszini/Documents/Unsupervised ML/Assignment 2/basket.RData')
    euclideandist = sqrt(euclideandistsq)
    return(euclideandist)
  }
- DZ = euclideandist(X)
- 
- # SMACOF function 
+
+ ####################################### SMACOF function ##############################################  
  # should be general in that it accepts as input a general matrix nxn of dissimilarities and nxp matrix of initial coordinates
  # ATTENTION : initial_coordinates must be nxp
  smacov_ours = function(dissimilarities, initial_coordinates, eps){
@@ -76,10 +77,8 @@ load('/Users/gabrielaszini/Documents/Unsupervised ML/Assignment 2/basket.RData')
  initial_coordinates = abs(replicate(2, rnorm(12)))
  eps = 10^(-6)
  X_k = smacov_ours(dissimilarities, initial_coordinates, eps)
-
- # After convergence make a plot of the final configuration. Add labels to the points
- # TO DO
  
+ ################################### Comparing code with package #####################################
  # Compare own code with that od mds of smacof package
  # Run mds() on data while setting temporarily itmax = 1 so that you can save the initial configuration and use it on own programe
  resultpackage_1it = mds(dissimilarities, ndim=2, type="ratio", itmax = 1, eps = 1e-06)
@@ -93,7 +92,10 @@ load('/Users/gabrielaszini/Documents/Unsupervised ML/Assignment 2/basket.RData')
  # X_k equal up to a constant !!!!! because of ratio and not absolute??
  X_k_ourcode/X_k_package # to check what I just said
  
- ####Making nice plots
+ # After convergence make a plot of the final configuration. Add labels to the points
+ # TO DO
+ 
+ # Making nice plots with package results
  
  #Configuration plot
  plot(resultpackage, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, 
@@ -134,8 +136,52 @@ load('/Users/gabrielaszini/Documents/Unsupervised ML/Assignment 2/basket.RData')
                                                                                      lwd = 1, ind = NULL), shepard.x = basket, identify = FALSE, 
       type = "p", pch = 20, cex = 0.5, asp = 1)
  
+ ####################################### Ordinal MDS ################################################## 
+ resultpackage_ordinal = mds(dissimilarities, ndim=2, type="ordinal", eps = 1e-06)
+ X_k_package_ordinal = resultpackage_ordinal$conf
+ 
+ # Making nice plots with package results
+ 
+ #Configuration plot
+ plot(resultpackage_ordinal, plot.type = "confplot", plot.dim = c(1,2), sphere = TRUE, 
+      bubscale = 1, col = 1, label.conf = list(label = TRUE, pos = 3, 
+                                               col = 1, cex = 0.8), hull.conf = list(hull = FALSE, col = 1, 
+                                                                                     lwd = 1, ind = NULL), shepard.x = NULL, identify = FALSE, 
+      type = "p", pch = 20, cex = 0.5, asp = 1)
+ 
+ #Residual plot
+ plot(resultpackage_ordinal, plot.type = "resplot", plot.dim = c(1,2), sphere = TRUE, 
+      bubscale = 1, col = 1, label.conf = list(label = TRUE, pos = 3, 
+                                               col = 1, cex = 0.8), hull.conf = list(hull = FALSE, col = 1, 
+                                                                                     lwd = 1, ind = NULL), shepard.x = NULL, identify = FALSE, 
+      type = "p", pch = 20, cex = 0.5, asp = 1)
+ 
+ #Shepard
+ plot(resultpackage_ordinal, plot.type = "Shepard", plot.dim = c(1,2), sphere = TRUE, 
+      bubscale = 1, col = 1, label.conf = list(label = TRUE, pos = 3, 
+                                               col = 1, cex = 0.8), hull.conf = list(hull = FALSE, col = 1, 
+                                                                                     lwd = 1, ind = NULL), shepard.x = NULL, identify = FALSE, 
+      type = "p", pch = 20, cex = 0.5, asp = 1)
+ 
+ plot(resultpackage_ordinal, plot.type = "Shepard", plot.dim = c(1,2), sphere = TRUE, 
+      bubscale = 1, col = 1, label.conf = list(label = TRUE, pos = 3, 
+                                               col = 1, cex = 0.8), hull.conf = list(hull = FALSE, col = 1, 
+                                                                                     lwd = 1, ind = NULL), shepard.x = basket, identify = FALSE, 
+      type = "p", pch = 20, cex = 0.5, asp = 1)
+ 
+ plot(resultpackage_ordinal, plot.type = "stressplot", plot.dim = c(1,2), sphere = TRUE, 
+      bubscale = 1, col = 1, label.conf = list(label = TRUE, pos = 3, 
+                                               col = 1, cex = 0.8), hull.conf = list(hull = FALSE, col = 1, 
+                                                                                     lwd = 1, ind = NULL), shepard.x = basket, identify = FALSE, 
+      type = "p", pch = 20, cex = 0.5, asp = 1)
+ 
+ plot(resultpackage_ordinal, plot.type = "bubbleplot", plot.dim = c(1,2), sphere = TRUE, 
+      bubscale = 1, col = 1, label.conf = list(label = TRUE, pos = 3, 
+                                               col = 1, cex = 0.8), hull.conf = list(hull = FALSE, col = 1, 
+                                                                                     lwd = 1, ind = NULL), shepard.x = basket, identify = FALSE, 
+      type = "p", pch = 20, cex = 0.5, asp = 1)
+ 
  #CHECK DIMENSION WITH PERMUTATION TEST?
- #CHECK IF DOING STRESS CORRECT
- #CHECK IF DOING RATIO
+ #CHECK IF DOING ABSOLUTE
  #CHECK ABOUT RATIO IN BUBBLEPLOT
 
