@@ -21,8 +21,11 @@ load('/Users/gabrielaszini/Documents/Unsupervised ML/Assignment 2/basket.RData')
    }
  }
  
- # Compare dissimilarities with the ones obtained by sim2diss() using method = "counts"
- # TO DO
+ # Comparing with package results - paper says to use counts, but it doesnt exist this option for function
+ # only 2 options that deliver 0 diagonal matrix are these:
+ dissimilarities_package1 = sim2diss(basket, method = "reciprocal")
+ dissimilarities_package2 = sim2diss(basket, method = "transition")
+ # Different from what we have
  
  euclideandist=function(X){
    store = X%*%t(X)
@@ -132,7 +135,6 @@ load('/Users/gabrielaszini/Documents/Unsupervised ML/Assignment 2/basket.RData')
       type = "p", pch = 20, cex = 0.5, asp = 1)
  
  #CHECK DIMENSION WITH PERMUTATION TEST?
- #CHECK DISSIMILARITY
  #CHECK IF DOING STRESS CORRECT
  #CHECK IF DOING RATIO
  #CHECK ABOUT RATIO IN BUBBLEPLOT
