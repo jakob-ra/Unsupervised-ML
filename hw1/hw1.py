@@ -32,19 +32,24 @@ def pca(X,r):
     # Take the first r loadings in V
     V_reduced = V[:r]
 
-    return X@V_reduced.T
+    return X@V_reduced.T, V_reduced
 
 # Compare own implementation vs package
-X_pca = pd.DataFrame(pca(df,2))
+comp_num = 2
+X_pca, loads = pca(df,comp_num)
+X_pca = pd.DataFrame(X_pca)
+# loads = pd.DataFrame(loads,columns=df.columns)
+# print(loads.T.to_latex()) 
 
-pca_package = PCA(n_components=2)
+pca_package = PCA(n_components=comp_num)
 X_pca_package = pd.DataFrame(pca_package.fit_transform(df))
 
-# X_pca.hist()
-# plt.show()
-
-# X_pca_package.hist()
-# plt.show()
+# Compare histograms of components
+X_pca.hist()
+axes.set_title('')
+plt.show()
+X_pca_package.hist()
+plt.show()
 
 # Scatterplot
 fig, axes = plt.subplots(1, 2, figsize=(10, 5))
@@ -63,7 +68,7 @@ plt.show()
 
 # Plot number of principal components vs explained variance
 pca_fin = PCA(n_components=10)
-pca_fin.fit(X)
+pca_fin.fit(X_pca)
 plt.scatter(range(1,11),pca_fin.explained_variance_ratio_*100)
 plt.xticks(range(1,11))
 plt.title('Variance explained by PCA')

@@ -7,8 +7,9 @@ rm(list = ls())
 library(smacof)
 
 #################################### Load the data ####################################################
-load('/Users/gabrielaszini/Documents/Unsupervised ML/Assignment 2/basket.RData')
-
+setwd('/Users/diego/Dropbox/TI/Unsupervised ML/Week 2')
+load('basket.RData')
+row.names(basket) <- colnames(basket)
 ############################ Transform data into dissimilarities ######################################
 # Here the values indicate co-purchase, so we will do the same transformation as in the paper
 # No entries are 0, so do not need to worry about that
@@ -21,7 +22,8 @@ load('/Users/gabrielaszini/Documents/Unsupervised ML/Assignment 2/basket.RData')
      dissimilarities[i,j] = log((basket[i,i]*basket[j,j])/(basket[j,i]*basket[i,j])) #did not put minus sign such that 
    }
  }
- 
+ colnames(dissimilarities) <- colnames(basket)
+ row.names(dissimilarities) <- colnames(basket)
  # Comparing with package results - paper says to use counts, but it doesnt exist this option for function
  # only 2 options that deliver 0 diagonal matrix are these:
  dissimilarities_package1 = sim2diss(basket, method = "reciprocal")
