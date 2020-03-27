@@ -1,21 +1,14 @@
 library('dummies')
 library('ramify')
+library('readxl')
+setwd("/Users/diego/Documents/GitHub/Unsupervised-ML/hw3")
+df_sample <- read_xlsx("df_sample.xlsx")
+df_sample <- df_sample[,!(names(df_sample) %in% c('W_FSTUWT'))]
 
-dat <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-21/per-capita-mismanaged-plastic-waste-vs-gdp-per-capita.csv")
-dat = na.omit(dat)
+df_sample <- as.data.frame(apply(df_sample, 2, as.numeric))  # Convert all variable types to numeric
 
-# Remember to recover categorical variables 
-dat <- dat[,!(names(dat) %in% c('Entity','Code','Year'))]
-
-plot(log(dat$GDP.per.capita..PPP..constant.2011.international.....Rate.),dat$Per.capita.mismanaged.plastic.waste..kilograms.per.person.per.day.)
-text(log(dat$GDP.per.capita..PPP..constant.2011.international.....Rate.),dat$Per.capita.mismanaged.plastic.waste..kilograms.per.person.per.day., labels = dat$Code, cex=0.7, pos=3)
-
-df <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-21/per-capita-plastic-waste-vs-gdp-per-capita.csv")
-df = na.omit(df)
-plot(log(df$GDP.per.capita..PPP..constant.2011.international.....constant.2011.international...),df$Per.capita.plastic.waste..kilograms.per.person.per.day.)
-text(log(df$GDP.per.capita..PPP..constant.2011.international.....constant.2011.international...),df$Per.capita.plastic.waste..kilograms.per.person.per.day., labels = df$Entity, cex=0.4, pos=3)
-
-df <- subset(df, Entity != 'Trinidad and Tobago')
+df_sample <- as.data.frame(apply(df_sample, 2,
+                     function(x) (x - min(x)) / (max(x) - min(x))))
 
 
 kmeans <- function(dat, k ,eps){
@@ -44,8 +37,9 @@ kmeans <- function(dat, k ,eps){
   }
   return(list(centers, cbind(dat,groups)))
 }
-dat <- as.data.frame(scale(dat))
-res <- kmeans(dat, 3, 1)
+
+
+res <- kmeans(df_sample, 4, 1)
 dat1 <- res[[2]]
 
 
