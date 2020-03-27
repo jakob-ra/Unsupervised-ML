@@ -31,7 +31,7 @@ kmeans <- function(dat, k ,eps){
   while (conv > eps){
     dist <- c()
     for (i in (1:k)){
-      dist <- cbind(dist, sqrt(rowSums((dat-centers[i,])^2)))
+      dist <- cbind(dist, rowSums((dat-centers[i,])^2))
     }
     groups <- argmin(dist, rows=TRUE)
     dums <- dummy(groups)
@@ -39,12 +39,12 @@ kmeans <- function(dat, k ,eps){
     for (i in (1:k)){
       new_centers <- rbind(new_centers, colSums(dat * dums[,i])/sum(dums[,i]) )
     }
-    conv <- sum(sqrt(rowSums((centers-new_centers)^2)))
+    conv <- sum(rowSums((centers-new_centers)^2))
     centers <- new_centers
   }
   return(list(centers, cbind(dat,groups)))
 }
-
+dat <- as.data.frame(scale(dat))
 res <- kmeans(dat, 3, 1)
 dat1 <- res[[2]]
 
