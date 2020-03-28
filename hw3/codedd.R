@@ -1,13 +1,13 @@
 library('dummies')
 library('ramify')
 library('readxl')
-library('flexcust')
+library('flexclust')
 
 setwd("/Users/diego/Documents/GitHub/Unsupervised-ML/hw3")
 df_sample <- read_xlsx("df_sample.xlsx")
 
 # Leaving out the weights
-df_sample <- df_sample[,!(names(df_sample) %in% c('ST004D01T','BSMJ','W_FSTUWT','CNT','SCIEEFF','MOTIVAT','CPSVALUE','EMOSUPP','PARED','HOMEPOS'))]
+df_sample <- df_sample[,!(names(df_sample) %in% c('ST004D01T','BSMJ','W_FSTUWT','CNT','SCIEEFF'))]
 # Convert all variable types to numeric
 df_sample <- as.data.frame(apply(df_sample, 2, as.numeric))
 # Scaling
@@ -23,7 +23,6 @@ better_kmeans <- function(dat, centers, eps){
   centers_old <- centers
   iters <- 1
   while (conv > eps && iters < 26){
-    print(iters)
     dist <- c()
     # Compute the distance to each center
     for (i in (1:k)){
@@ -37,28 +36,7 @@ better_kmeans <- function(dat, centers, eps){
     for (i in (1:k)){
       new_centers <- rbind(new_centers, colSums(dat * dums[,i])/sum(dums[,i]) )
     }
-    # Check if any single switch decrease the objective
-    # for (i in (1:n)){
-    #   for (j in (1:k)){
-    #     temp_groups <- groups
-    #     temp_groups[i] <- j
-    #     temp_dums <- dummy(groups)
-    #     temp_centers <- c()
-    #     for (i in (1:k)){
-    #       temp_centers <- rbind(temp_centers, colSums(dat * temp_dums[,i])/sum(temp_dums[,i]) )
-    #     }
-    #     temp_dist <- c()
-    #     for (i in (1:k)){
-    #       temp_dist <- cbind(dist, rowSums((dat-temp_centers[i,])^2))
-    #     }
-    #     if (sum(dist) > sum(temp_dist)){
-    #       groups <- temp_groups
-    #       new_centers <- temp_centers
-    #     }
-    #   }
-    # }
-    # Test convergence
-    # By change in groups assignments
+    # Check convergence
     conv <- sqrt(sum((new_centers-centers_old)^2))
     # Update variables
     centers_old <- new_centers
@@ -83,10 +61,15 @@ rand_centers <- function(dat,k){
 
 centers <- rand_centers(df_sample,4)
 res_pack <- kcca(df_sample, centers)
-res_pack2 <- kmeans(df_sample, centers, iter.max=1)
 res <- better_kmeans(df_sample, centers, 0.001)
 dat1 <- res[[2]]
 
 res[[1]]
 res_pack@centers
-res_pack2$centers
+
+
+
+
+
+
+
