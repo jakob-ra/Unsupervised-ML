@@ -1,6 +1,7 @@
 library('dummies')
 library('ramify')
 library('readxl')
+library('flexcust')
 
 setwd("/Users/diego/Documents/GitHub/Unsupervised-ML/hw3")
 df_sample <- read_xlsx("df_sample.xlsx")
@@ -18,11 +19,11 @@ better_kmeans <- function(dat, centers, eps){
   # with initial centers given by centers
   k <- dim(centers)[1]
   n <- length(dat[[1]])
-  groups_old <- sample(1:k, n, replace=TRUE)
   conv <- 100000
   centers_old <- centers
   iters <- 1
-  while (conv > eps && iters < 10){
+  while (conv > eps && iters < 11){
+    print(iters)
     dist <- c()
     # Compute the distance to each center
     for (i in (1:k)){
@@ -37,34 +38,33 @@ better_kmeans <- function(dat, centers, eps){
       new_centers <- rbind(new_centers, colSums(dat * dums[,i])/sum(dums[,i]) )
     }
     # Check if any single switch decrease the objective
-    for (i in (1:n)){
-      for (j in (1:k)){
-        temp_groups <- groups
-        temp_groups[i] <- j
-        temp_dums <- dummy(groups)
-        temp_centers <- c()
-        for (i in (1:k)){
-          temp_centers <- rbind(temp_centers, colSums(dat * temp_dums[,i])/sum(temp_dums[,i]) )
-        }
-        temp_dist <- c()
-        for (i in (1:k)){
-          temp_dist <- cbind(dist, rowSums((dat-temp_centers[i,])^2))
-        }
-        if (sum(dist) > sum(temp_dist)){
-          groups <- temp_groups
-          new_centers <- temp_centers
-        }
-      }
-    }
+    # for (i in (1:n)){
+    #   for (j in (1:k)){
+    #     temp_groups <- groups
+    #     temp_groups[i] <- j
+    #     temp_dums <- dummy(groups)
+    #     temp_centers <- c()
+    #     for (i in (1:k)){
+    #       temp_centers <- rbind(temp_centers, colSums(dat * temp_dums[,i])/sum(temp_dums[,i]) )
+    #     }
+    #     temp_dist <- c()
+    #     for (i in (1:k)){
+    #       temp_dist <- cbind(dist, rowSums((dat-temp_centers[i,])^2))
+    #     }
+    #     if (sum(dist) > sum(temp_dist)){
+    #       groups <- temp_groups
+    #       new_centers <- temp_centers
+    #     }
+    #   }
+    # }
     # Test convergence
     # By change in groups assignments
-    conv <- sum(abs(groups-groups_old))
+    conv <- sum((new_centers-centers_old)^2)
     # Update variables
-    groups_old <- groups
     centers_old <- new_centers
     iters <- iters+1
   }
-  return(list(centers, cbind(dat,groups)))
+  return(list(new_centers, cbind(dat,groups)))
 }
 
 rand_centers <- function(dat,k){
@@ -82,9 +82,11 @@ rand_centers <- function(dat,k){
 }
 
 centers <- rand_centers(df_sample,2)
-res_pack <- kmeans(df_sample, centers, iter.max=10)
+res_pack <- kcca(df_sample, centers, iter.max=10)
+res_pack2 <- kmeans(df_sample, centers, iter.max=10)
 res <- better_kmeans(df_sample, centers, 0.00001)
 dat1 <- res[[2]]
 
 res[[1]]
 res_pack$centers
+res_pack2$centers
