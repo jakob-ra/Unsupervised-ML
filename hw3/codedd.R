@@ -7,7 +7,7 @@ setwd("/Users/diego/Documents/GitHub/Unsupervised-ML/hw3")
 df_sample <- read_xlsx("df_sample.xlsx")
 
 # Leaving out the weights
-df_sample <- df_sample[,!(names(df_sample) %in% c('W_FSTUWT'))]
+df_sample <- df_sample[,!(names(df_sample) %in% c('ST004D01T','BSMJ','W_FSTUWT','CNT','SCIEEFF','MOTIVAT','CPSVALUE','EMOSUPP','PARED','HOMEPOS'))]
 # Convert all variable types to numeric
 df_sample <- as.data.frame(apply(df_sample, 2, as.numeric))
 # Scaling
@@ -22,12 +22,12 @@ better_kmeans <- function(dat, centers, eps){
   conv <- 100000
   centers_old <- centers
   iters <- 1
-  while (conv > eps && iters < 11){
+  while (conv > eps && iters < 26){
     print(iters)
     dist <- c()
     # Compute the distance to each center
     for (i in (1:k)){
-      dist <- cbind(dist, rowSums((dat-centers_old[i,])^2))
+      dist <- cbind(dist, sqrt(rowSums((dat-t(replicate(n,centers_old[i,])))^2)))
     }
     # Assign groups
     groups <- argmin(dist, rows=TRUE)
@@ -59,7 +59,7 @@ better_kmeans <- function(dat, centers, eps){
     # }
     # Test convergence
     # By change in groups assignments
-    conv <- sum((new_centers-centers_old)^2)
+    conv <- sqrt(sum((new_centers-centers_old)^2))
     # Update variables
     centers_old <- new_centers
     iters <- iters+1
@@ -81,12 +81,12 @@ rand_centers <- function(dat,k){
   return(centers)
 }
 
-centers <- rand_centers(df_sample,2)
-res_pack <- kcca(df_sample, centers, iter.max=10)
-res_pack2 <- kmeans(df_sample, centers, iter.max=10)
-res <- better_kmeans(df_sample, centers, 0.00001)
+centers <- rand_centers(df_sample,4)
+res_pack <- kcca(df_sample, centers)
+res_pack2 <- kmeans(df_sample, centers, iter.max=1)
+res <- better_kmeans(df_sample, centers, 0.001)
 dat1 <- res[[2]]
 
 res[[1]]
-res_pack$centers
+res_pack@centers
 res_pack2$centers
