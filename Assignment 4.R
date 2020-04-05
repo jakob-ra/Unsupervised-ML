@@ -18,6 +18,7 @@ unique(day1[,2]) #we see that for some observations we have number of articles t
 # we delete variables with such values
 subset_day1_total = day1[which(day1[,2] != "2:0.295484" & day1[,2] != "2:0.348813" & day1[,2] != "2:0.277121" & day1[,2] != "2:0.310657" & day1[,2] != "2:0.332416" & day1[,2] != "2:0.211406"), ]
 subset_day1_total =  subset_day1[sample(nrow(subset_day1), 20000), ]
+#save(subset_day1_total, file = "/Users/gabrielaszini/Documents/Unsupervised ML/Assignment 4/subset_day1_total.Rdata")
 # taking only important rows
 subset_day1 = subset_day1_total[,1:3]
 # change variables from factors to numeric
@@ -172,7 +173,7 @@ plot(average_reward_ucb1)
 
 ### Epsilon-greedy
 # non-optimistic version, epsilon greedy 0.1
-initial_values = 0.5
+initial_values = 0
 iterations = 1000
 epsilon = 0.1
 
@@ -181,7 +182,7 @@ articles_updates_egreedy_nopt_01 = epsilon_greedy_nopt_01[[1]]
 outcome_egreedy_nopt_01 = epsilon_greedy_nopt_01[[2]]
 
 # non-optimistic version, epsilon greedy 0.1
-initial_values = 0.5
+initial_values = 0
 iterations = 1000
 epsilon = 0.01
 
@@ -190,7 +191,7 @@ articles_updates_egreedy_nopt_001 = epsilon_greedy_nopt_001[[1]]
 outcome_egreedy_nopt_001 = epsilon_greedy_nopt_001[[2]]
 
 # non-optimistic version, epsilon greedy 0.15
-initial_values = 0.5
+initial_values = 0
 iterations = 1000
 epsilon = 0.15
 
@@ -227,7 +228,7 @@ outcome_egreedy_opt_015 = epsilon_greedy_opt_015[[2]]
 
 ###UCB1
 #non-optimistic version
-initial_values = 0.5
+initial_values = 0.0
 iterations = 1000
 ucb1_nopt = ucb1(subset_day1_numeric, initial_values, iterations)
 articles_updates_ucb1_nopt = ucb1_nopt[[1]]
@@ -240,5 +241,100 @@ ucb1_opt = ucb1(subset_day1_numeric, initial_values, iterations)
 articles_updates_ucb1_opt = ucb1_opt[[1]]
 outcome_ubc1_opt = ucb1_opt[[2]]
 
-### TO DO:
-#repeat procedure for different clusters
+######################## Plotting average rewards : E-greedy non-optimistic ############################
+average_reward_egreedy_nopt_01 = c()
+for(i in 1:1000){
+  average_reward_egreedy_nopt_01[i] = sum(outcome_egreedy_nopt_01$reward[1:i])/i
+}
+
+average_reward_egreedy_nopt_001 = c()
+for(i in 1:1000){
+  average_reward_egreedy_nopt_001[i] = sum(outcome_egreedy_nopt_001$reward[1:i])/i
+}
+
+average_reward_egreedy_nopt_015 = c()
+for(i in 1:1000){
+  average_reward_egreedy_nopt_015[i] = sum(outcome_egreedy_nopt_015$reward[1:i])/i
+}
+
+# Plot for non optimal e-greedy
+plot(average_reward_egreedy_nopt_001, type="l", col = "red", xlab="iterations", ylab="average reward", ylim=c(0,0.7))
+lines(average_reward_egreedy_nopt_01, col = "green")
+lines(average_reward_egreedy_nopt_015, col ="blue")
+title("Average Rewards for epsilon-greedy")
+legend(600,0.5,col=c("blue","green", "red"), legend=c("epsilon = 0.15","epsilon = 0.1","epsilon = 0.01"), lty=1:3, cex=0.8)
+
+plot(average_reward_egreedy_nopt_001, type="l", col = "red", xlab="iterations", ylab="average reward", ylim=c(0,0.1), xlim=c(10,1000))
+lines(average_reward_egreedy_nopt_01, col = "green")
+lines(average_reward_egreedy_nopt_015, col ="blue")
+title("Average Rewards for epsilon-greedy")
+legend(600,0.5,col=c("blue","green", "red"), legend=c("epsilon = 0.15","epsilon = 0.1","epsilon = 0.01"), lty=1:3, cex=0.8)
+
+############################## Plotting average rewards : E-greedy optimistic ###########################
+average_reward_egreedy_opt_01 = c()
+for(i in 1:1000){
+  average_reward_egreedy_opt_01[i] = sum(outcome_egreedy_opt_01$reward[1:i])/i
+}
+
+average_reward_egreedy_opt_001 = c()
+for(i in 1:1000){
+  average_reward_egreedy_opt_001[i] = sum(outcome_egreedy_opt_001$reward[1:i])/i
+}
+
+average_reward_egreedy_opt_015 = c()
+for(i in 1:1000){
+  average_reward_egreedy_opt_015[i] = sum(outcome_egreedy_opt_015$reward[1:i])/i
+}
+
+# Plot for non optimal e-greedy
+plot(average_reward_egreedy_opt_001, type="l", col = "red", xlab="iterations", ylab="average reward", ylim=c(0,0.4))
+lines(average_reward_egreedy_opt_01, col = "green")
+lines(average_reward_egreedy_opt_015, col ="blue")
+title("Average Rewards for epsilon-greedy for optimistic initial.")
+legend(600,0.3,col=c("blue","green", "red"), legend=c("epsilon = 0.15","epsilon = 0.1","epsilon = 0.01"), lty=1:3, cex=0.8)
+
+plot(average_reward_egreedy_opt_001, type="l", col = "red", xlab="iterations", ylab="average reward", ylim=c(0,0.1), xlim=c(10,1000))
+lines(average_reward_egreedy_opt_01, col = "green")
+lines(average_reward_egreedy_opt_015, col ="blue")
+title("Average Rewards for epsilon-greedy for optimistic initial.")
+legend(600,0.08,col=c("blue","green", "red"), legend=c("epsilon = 0.15","epsilon = 0.1","epsilon = 0.01"), lty=1:3, cex=0.8)
+
+################################## Plotting average rewards : UCB ######################################
+average_reward_ucb_nopt = c()
+for(i in 1:1000){
+  average_reward_ucb_nopt[i] = sum(outcome_ubc1_nopt$reward[1:i])/i
+}
+
+average_reward_ucb_opt = c()
+for(i in 1:1000){
+  average_reward_ucb_opt[i] = sum(outcome_ubc1_opt$reward[1:i])/i
+}
+
+# Plot for non optimal e-greedy
+plot(average_reward_ucb_nopt, type="l", col = "red", xlab="iterations", ylab="average reward", ylim=c(0,0.4))
+lines(average_reward_ucb_opt, col = "green")
+title("Average Rewards for UCB1")
+legend(600,0.3,col=c("green", "red"), legend=c("UCB1 optmistic","UCB1"), lty=1:2, cex=0.8)
+
+plot(average_reward_ucb_nopt, type="l", col = "red", xlab="iterations", ylab="average reward", ylim=c(0,0.1), xlim=c(10,1000))
+lines(average_reward_ucb_opt, col = "green")
+title("Average Rewards for UCB1")
+legend(600,0.08,col=c("green", "red"), legend=c("UCB1 optmistic","UCB1"), lty=1:2, cex=0.8)
+
+################# Plotting percentage optimal arm pulled : E-greedy non-optimistic ############################
+
+#selecting optimal arm from the dataset
+tapply(subset_day1_numeric$V3, subset_day1_numeric$V2, mean)
+#based on this, the highest is arm 109670 with average of 0.080789946 
+
+optimal_arm_egreedy_nopt_01 = c()
+for(i in 1:1000){
+  optimal_arm_egreedy_nopt_01[i] = sum(outcome_egreedy_nopt_01$arm[1:i] == 109670)/i
+}
+
+plot(optimal_arm_egreedy_nopt_01)
+
+
+
+
+
